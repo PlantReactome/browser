@@ -19,7 +19,7 @@ import org.reactome.web.pwp.model.classes.Pathway;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class DiagramDisplay extends DockLayoutPanel implements Diagram.Display,
-        ContentLoadedHandler, GraphObjectSelectedHandler, GraphObjectHoveredHandler, DiagramObjectsFlagResetHandler,
+        DiagramLoadedHandler, GraphObjectSelectedHandler, GraphObjectHoveredHandler, DiagramObjectsFlagResetHandler,
         AnalysisResetHandler, FireworksOpenedHandler {
 
     private Diagram.Presenter presenter;
@@ -127,7 +127,7 @@ public class DiagramDisplay extends DockLayoutPanel implements Diagram.Display,
     }
 
     @Override
-    public void onContentLoaded(ContentLoadedEvent event) {
+    public void onDiagramLoaded(DiagramLoadedEvent event) {
         this.presenter.diagramLoaded(event.getContext().getContent().getDbId());
     }
 

@@ -77,9 +77,9 @@ public class HierarchyItem extends TreeItem implements HasHandlers, MouseOverHan
         if(inferred!=null){
             Image inferredIcon = new Image(inferred);
             if(species.getDbId().equals(Token.DEFAULT_SPECIES_ID)){
-                inferredIcon.setTitle("Inferred from a non-human event");
+                inferredIcon.setTitle("Inferred from a non-rice event");
             }else{
-                inferredIcon.setTitle("Inferred from human event");
+                inferredIcon.setTitle("Inferred from rice event");
             }
             itemContent.add(inferredIcon);
         }

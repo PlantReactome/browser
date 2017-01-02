@@ -44,11 +44,11 @@ public class Options extends DockLayoutPanel implements ClickHandler, NextStepSe
         explanation.getElement().setInnerHTML("Step 2: Select your preferred options.");
         container.add(explanation);
 
-        container.add(projection = new CheckBox("Project to human"));
+        container.add(projection = new CheckBox("Project to rice"));
         projection.addStyleName(AnalysisStyleFactory.getAnalysisStyle().optionsPanelCheckBox());
         projection.setValue(true);
 
-        DisclosurePanel projectionInfo = new DisclosurePanel(RESOURCES.minus(), RESOURCES.plus(), "All non-human identifiers are converted to their human equivalents (expand for more info...)");
+        DisclosurePanel projectionInfo = new DisclosurePanel(RESOURCES.minus(), RESOURCES.plus(), "All non-rice identifiers are converted to their rice equivalents (expand for more info...)");
         projectionInfo.addStyleName(AnalysisStyleFactory.getAnalysisStyle().optionsPanelDisclosure());
         projectionInfo.add(getProjectionCarrousel());
         projectionInfo.getContent().addStyleName(AnalysisStyleFactory.getAnalysisStyle().optionsPanelDisclosureContent());
@@ -122,8 +122,8 @@ public class Options extends DockLayoutPanel implements ClickHandler, NextStepSe
     private CarrouselPanel getProjectionCarrousel(){
         Slide slide1 = new Slide(RESOURCES.projectionSlide01(),"Every species has its own set of identifiers<br>(genes, proteins, chemicals, mRNA, etc...)","white");
         String infers = " <a style=\"color:white\" target=\"_blank\" href=\"http://www.reactome.org/pages/documentation/electronically-inferred-events/\">infers</a> ";
-        Slide slide2 = new Slide(RESOURCES.projectionSlide02(),"Reactome curates human pathways and" + infers + "their existence in other<br>species using ortholgy information from the ENSEMBL Compara database","white");
-        Slide slide3 = new Slide(RESOURCES.projectionSlide03(),"When this option is selected, all non-human identifiers in your sample<br>are mapped to their human equivalents before the analysis is performed","white");
+        Slide slide2 = new Slide(RESOURCES.projectionSlide02(),"Plant Reactome curates rice pathways and" + infers + "their existence in other<br>species using orthology information from the ENSEMBL Compara database and Inparanoid cluster analyses","white");
+        Slide slide3 = new Slide(RESOURCES.projectionSlide03(),"When this option is selected, all non-rice identifiers in your sample<br>are mapped to their rice equivalents before the analysis is performed","white");
         List<Slide> slidesList = new LinkedList<>();
         slidesList.add(slide1);
         slidesList.add(slide2);

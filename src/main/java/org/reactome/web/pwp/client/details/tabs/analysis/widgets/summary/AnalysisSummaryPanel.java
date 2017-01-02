@@ -124,7 +124,7 @@ public class AnalysisSummaryPanel extends DockLayoutPanel {
             }
             optPanel.add(new InlineLabel(sb.toString()));
         }else{
-            optPanel.add(new InlineLabel("Homo sapiens compared with "));
+            optPanel.add(new InlineLabel("Oryza sativa compared with "));
             optPanel.add(new InlineLabel(summary.getSpeciesName()));
         }
         return optPanel;

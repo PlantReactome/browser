@@ -37,7 +37,7 @@ public class Browser implements EntryPoint {
         String hostName = Window.Location.getHostName();
         Browser.VERBOSE = (hostName.equals("localhost") || hostName.equals("127.0.0.1"));
         TitleChangedEvent.REPORT = false;
-        Token.DEFAULT_SPECIES_ID = 48887L; //Homo sapiens
+        Token.DEFAULT_SPECIES_ID = 186860L; //Oryza sativa
         Token.DELIMITER = "&";
     }
 

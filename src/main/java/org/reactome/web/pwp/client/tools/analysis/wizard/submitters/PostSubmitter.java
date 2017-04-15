@@ -87,22 +87,22 @@ public class PostSubmitter extends DockLayoutPanel implements ClickHandler {
         FlowPanel examples = new FlowPanel();
         examples.addStyleName(AnalysisStyleFactory.getAnalysisStyle().postSubmitterExamples());
         examples.add(new Label("Some examples:"));
-        examples.add(new Button("UniProt accession list", new ClickHandler() {
+        examples.add(new Button("Reference accession list (UniProt)", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 textArea.setText(AnalysisExamples.EXAMPLES.getUniprot().getText());
             }
         }));
-        examples.add(new Button("Gene name list", new ClickHandler() {
+        /*examples.add(new Button("Gene name list", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 textArea.setText(AnalysisExamples.EXAMPLES.getGeneNames().getText());
             }
-        }));
-        examples.add(new Button("Gene NCBI / Entrez list", new ClickHandler() {
+        }));*/
+        examples.add(new Button("Gene identifiers", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                textArea.setText(AnalysisExamples.EXAMPLES.geneNCBI().getText());
+                textArea.setText(AnalysisExamples.EXAMPLES.geneIDs().getText());
             }
         }));
         examples.add(new Button("Small molecules (ChEBI)", new ClickHandler() {
@@ -117,7 +117,7 @@ public class PostSubmitter extends DockLayoutPanel implements ClickHandler {
                 textArea.setText(AnalysisExamples.EXAMPLES.getKegg().getText());
             }
         }));
-        examples.add(new Button("Microarray data", new ClickHandler() {
+        examples.add(new Button("Expression data (microarray)", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 textArea.setText(AnalysisExamples.EXAMPLES.getExpression().getText());
@@ -129,12 +129,12 @@ public class PostSubmitter extends DockLayoutPanel implements ClickHandler {
                 textArea.setText(AnalysisExamples.EXAMPLES.getMetabolomics().getText());
             }
         }));
-        examples.add(new Button("Cancer Gene Census (COSMIC)", new ClickHandler() {
+        /*examples.add(new Button("Cancer Gene Census (COSMIC)", new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 textArea.setText(AnalysisExamples.EXAMPLES.getCancerGeneCensus().getText());
             }
-        }));
+        }));*/
         return examples;
     }
 
@@ -159,6 +159,9 @@ public class PostSubmitter extends DockLayoutPanel implements ClickHandler {
 
         @Source("GeneNCBI_Entrez.txt")
         TextResource geneNCBI();
+
+        @Source("geneIdentifiers.txt")
+        TextResource geneIDs();
 
         @Source("chEBI.txt")
         TextResource getChEBI();

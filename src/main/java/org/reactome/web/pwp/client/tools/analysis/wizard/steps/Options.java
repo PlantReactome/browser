@@ -106,7 +106,7 @@ public class Options extends DockLayoutPanel implements ClickHandler, NextStepSe
 
     private CarrouselPanel getInteractorsCarrousel(){
         List<Slide> slidesList = new LinkedList<>();
-        slidesList.add(new Slide(RESOURCES.interactorsSlide01(),"Reactome can include interaction data from IntAct<br>when performing an analysis","white"));
+        slidesList.add(new Slide(RESOURCES.interactorsSlide01(),"Plant Reactome can include interaction data from IntAct<br>when performing an analysis","white"));
         slidesList.add(new Slide(RESOURCES.interactorsSlide02(),"When interactors are found for the selected resource<br>proteins that have interactors are displayed like this","white"));
         slidesList.add(new Slide(RESOURCES.interactorsSlide03(),"Selecting the <b>\"include interactors\"</b> option will take<br>interactors into account when performing the analysis","white"));
         slidesList.add(new Slide(RESOURCES.interactorsSlide04(),"Only gene symbols, chemical names and UniProt or<br>ChEBI identifiers can be used to identify interactors","white"));
@@ -120,10 +120,10 @@ public class Options extends DockLayoutPanel implements ClickHandler, NextStepSe
     }
 
     private CarrouselPanel getProjectionCarrousel(){
-        Slide slide1 = new Slide(RESOURCES.projectionSlide01(),"Every species has its own set of identifiers<br>(genes, proteins, chemicals, mRNA, etc...)","white");
-        String infers = " <a style=\"color:white\" target=\"_blank\" href=\"http://www.reactome.org/pages/documentation/electronically-inferred-events/\">infers</a> ";
-        Slide slide2 = new Slide(RESOURCES.projectionSlide02(),"Plant Reactome curates rice pathways and" + infers + "their existence in other<br>species using orthology information from the ENSEMBL Compara database and Inparanoid cluster analyses","white");
-        Slide slide3 = new Slide(RESOURCES.projectionSlide03(),"When this option is selected, all non-rice identifiers in your sample<br>are mapped to their rice equivalents before the analysis is performed","white");
+        Slide slide1 = new Slide(RESOURCES.projectionSlide01(),"Every species has its own set of identifiers<br>(genes, gene products, chemicals, etc...)","white");
+        String infers = " <a style=\"color:white\" target=\"_blank\" href=\"http://plantreactome.gramene.org/pages/documentation/electronically-inferred-events/\">infers</a> ";
+        Slide slide2 = new Slide(RESOURCES.projectionSlide02(),"Plant Reactome curates reference rice pathways and" + infers + "their existence in other<br>species using associated reference gene orthology information provided by Gramene's Compara and Planteome's Inparanoid clustering methods","white");
+        Slide slide3 = new Slide(RESOURCES.projectionSlide03(),"When this option is selected, all identifiers in your sample<br>are mapped to their reference equivalent in the database before analysis is performed","white");
         List<Slide> slidesList = new LinkedList<>();
         slidesList.add(slide1);
         slidesList.add(slide2);

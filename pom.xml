@@ -27,7 +27,8 @@
         <reactome.web.analyitics>2.0.1</reactome.web.analyitics>
         <reactome.web.analysis-client>1.3.0</reactome.web.analysis-client>
         <reactome.web.carrousel>1.0.0</reactome.web.carrousel>
-        <reactome.web.diagram>3.3.0-SNAPSHOT</reactome.web.diagram>
+        <reactome.web.diagram>3.3.2</reactome.web.diagram>
+        <!--reactome.web.diagram>3.3.0-SNAPSHOT</reactome.web.diagram-->
         <!--reactome.web.diagram>3.2.0</reactome.web.diagram-->
         <reactome.web.fireworks>1.3.2</reactome.web.fireworks>
         <reactome.web.model>1.2.0-SNAPSHOT</reactome.web.model><!--<reactome.web.model>2.0.0-SNAPSHOT</reactome.web.model>-->
@@ -108,7 +109,7 @@
         <dependency>
             <groupId>uk.ac.ebi.pwp.widgets</groupId>
             <artifactId>gxa</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.3</version>
         </dependency>
 
         <dependency>

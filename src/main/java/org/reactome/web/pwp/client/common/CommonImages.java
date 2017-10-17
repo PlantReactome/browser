@@ -41,7 +41,7 @@ public interface CommonImages extends ClientBundle {
     @Source("images/loader.gif")
     ImageResource loader();
 
-    @Source("images/logo.png")
+    @Source("images/PR_logo_small_no_text_v2.png")
     ImageResource logo();
 
     @Source("images/ORCID.png")

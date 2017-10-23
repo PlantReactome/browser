@@ -6,10 +6,11 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.GO_CellularComponent;
 import org.reactome.web.pwp.client.details.common.widgets.disclosure.DisclosurePanelFactory;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.GO_CellularComponent;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 
 
 /**
@@ -44,14 +45,19 @@ public class GO_CellularComponentPanel extends DetailsPanel implements OpenHandl
     @Override
     public void onOpen(OpenEvent<DisclosurePanel> event) {
         if(!isLoaded())
-            this.goCellularComponent.load(new DatabaseObjectLoadedHandler() {
+            this.goCellularComponent.load(new ContentClientHandler.ObjectLoaded() {
                 @Override
-                public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+                public void onObjectLoaded(DatabaseObject databaseObject) {
                     setReceivedData(databaseObject);
                 }
 
                 @Override
-                public void onDatabaseObjectError(Throwable trThrowable) {
+                public void onContentClientException(Type type, String message) {
+                    disclosurePanel.setContent(getErrorMessage());
+                }
+
+                @Override
+                public void onContentClientError(ContentClientError error) {
                     disclosurePanel.setContent(getErrorMessage());
                 }
             });
@@ -63,11 +69,10 @@ public class GO_CellularComponentPanel extends DetailsPanel implements OpenHandl
 
         FlexTable flexTable = new FlexTable();
         flexTable.setWidth("98%");
-        flexTable.addStyleName("elv-Details-OverviewDisclosure-content");
         flexTable.getColumnFormatter().setWidth(0, "75px");
 
         flexTable.setWidget(0, 0, new Label("Accession"));
-        Anchor link = new Anchor("GO:"+accession, "http://www.ebi.ac.uk/QuickGO/GTerm?id=GO:"+accession);
+        Anchor link = new Anchor("GO:"+accession, "//www.ebi.ac.uk/QuickGO/GTerm?id=GO:"+accession);
         link.setTarget("_blank");
         link.setTitle("Go to QuickGO for GO:" + accession);
         flexTable.setWidget(0, 1, link);

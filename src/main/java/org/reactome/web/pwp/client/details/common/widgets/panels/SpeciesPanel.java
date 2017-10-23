@@ -4,8 +4,8 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Species;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Species;
 
 import java.util.List;
 
@@ -40,7 +40,6 @@ public class SpeciesPanel extends DetailsPanel implements TransparentPanel {
         hp.add(new HTMLPanel(sb.toString()));
 
         initWidget(hp);
-        addStyleName("elv-Details-OverviewDisclosure-content");
     }
 
     public SpeciesPanel(DetailsPanel parentPanel, Species species) {
@@ -48,7 +47,6 @@ public class SpeciesPanel extends DetailsPanel implements TransparentPanel {
         this.species = species;
 
         initWidget(new HTMLPanel(species.getDisplayName()));
-        addStyleName("elv-Details-OverviewDisclosure-content");
     }
 
     @Override

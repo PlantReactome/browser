@@ -1,6 +1,7 @@
 package org.reactome.web.pwp.client.hierarchy.widget;
 
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.http.client.*;
 import com.google.gwt.user.client.ui.CustomTree;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.pwp.client.common.utils.Console;
@@ -11,28 +12,61 @@ import org.reactome.web.pwp.client.hierarchy.events.HierarchyItemMouseOverEvent;
 import org.reactome.web.pwp.client.hierarchy.handlers.HierarchyItemDoubleClickedHandler;
 import org.reactome.web.pwp.client.hierarchy.handlers.HierarchyItemMouseOutHandler;
 import org.reactome.web.pwp.client.hierarchy.handlers.HierarchyItemMouseOverHandler;
-import org.reactome.web.pwp.model.classes.Event;
-import org.reactome.web.pwp.model.classes.Pathway;
-import org.reactome.web.pwp.model.classes.ReactionLikeEvent;
-import org.reactome.web.pwp.model.classes.Species;
-import org.reactome.web.pwp.model.util.Path;
+import org.reactome.web.pwp.model.client.classes.Event;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.classes.ReactionLikeEvent;
+import org.reactome.web.pwp.model.client.classes.Species;
+import org.reactome.web.pwp.model.client.util.Path;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class HierarchyTree extends CustomTree implements HierarchyItemDoubleClickedHandler, HierarchyItemMouseOverHandler, HierarchyItemMouseOutHandler {
 
-    private MapSet<Long, HierarchyItem> treeItems;
     private Species species;
+    private static MapSet<Long, HierarchyItem> treeItems = new MapSet<>();
+    private static List<Long> ehlds = new ArrayList<>();
+
+    static {
+        String url = "/download/current/ehld/svgsummary.txt?v=" + System.currentTimeMillis();
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+        try {
+            requestBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    if (response.getStatusCode() == Response.SC_OK) {
+                        for (String id : response.getText().split("\n")) {
+                            try {
+                                ehlds.add(Long.valueOf(id));
+                            } catch (NumberFormatException ex) {
+                                //Nothing here
+                            }
+                        }
+                        //In case there are HierarchyItems already loaded, these might need to be updated
+                        for (HierarchyItem hierarchyItem : treeItems.getValues()) {
+                            if(ehlds.contains(hierarchyItem.getEvent().getDbId())) {
+                                hierarchyItem.setEHLD();
+                            }
+                        }
+                    } else {
+                        Console.warn("No EHLD summary found");
+                    }
+                }
+
+                @Override
+                public void onError(Request request, Throwable throwable) {
+                    Console.warn("It was no possible to connect to the server to get the EHLD summary found");
+                }
+            });
+        } catch (RequestException e) {
+            Console.warn("It was no possible to connect to the server to get the EHLD summary found");
+        }
+    }
 
     public HierarchyTree(Species species) {
         super();
-        this.treeItems = new MapSet<>();
         this.species = species;
     }
 
@@ -113,8 +147,8 @@ public class HierarchyTree extends CustomTree implements HierarchyItemDoubleClic
 
     public Set<Pathway> getHierarchyPathwaysWithReactionsLoaded(){
         Set<Pathway> rtn = new HashSet<>();
-        for (Long eventId : this.treeItems.keySet()) {
-            for (HierarchyItem item : this.treeItems.getElements(eventId)) {
+        for (Long eventId : treeItems.keySet()) {
+            for (HierarchyItem item : treeItems.getElements(eventId)) {
                 if(item.getEvent() instanceof ReactionLikeEvent){
                     HierarchyItem parent = (HierarchyItem) item.getParentItem();
                     rtn.add((Pathway)parent.getEvent());
@@ -126,23 +160,24 @@ public class HierarchyTree extends CustomTree implements HierarchyItemDoubleClic
 
     public Set<HierarchyItem> getHierarchyItems() {
         Set<HierarchyItem> rtn = new HashSet<>();
-        for (Long id : this.treeItems.keySet()) {
-            rtn.addAll(this.treeItems.getElements(id));
+        for (Long id : treeItems.keySet()) {
+            rtn.addAll(treeItems.getElements(id));
         }
         return rtn;
     }
 
-    public void loadPathwayChildren(HierarchyItem item, List<Event> children) throws Exception {
+    public void loadPathwayChildren(HierarchyItem item, List<? extends Event> children) throws Exception {
         if (item != null) {
             item.removeItems();
             item.setChildrenLoaded(true);
         }
         for (Event child : children) {
-            HierarchyItem hi = new HierarchyItem(species, child);
+            boolean ehld = ehlds.contains(child.getDbId());
+            HierarchyItem hi = new HierarchyItem(species, child, ehld);
             hi.addHierarchyItemDoubleClickedHandler(this);
             hi.addHierarchyItemMouseOverHandler(this);
             hi.addHierarchyItemMouseOutHandler(this);
-            this.treeItems.add(child.getDbId(), hi);
+            treeItems.add(child.getDbId(), hi);
             if (item == null) {
                 addItem(hi);
             } else {

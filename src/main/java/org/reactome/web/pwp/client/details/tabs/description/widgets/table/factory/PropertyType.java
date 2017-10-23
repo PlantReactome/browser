@@ -6,7 +6,6 @@ package org.reactome.web.pwp.client.details.tabs.description.widgets.table.facto
 public enum PropertyType {
 
     DOI("DOI"),
-    STABLE_IDENTIFIER("Stable Identifier"),
     SUMMATION("Summation"),
     DISEASE("Disease"),
     CROSS_REFERENCES("External identifiers"),
@@ -14,8 +13,10 @@ public enum PropertyType {
     RELATED_IDENTIFIER("Other identifiers related to this sequence"),
     ENTITY_FUNCTIONAL_STATUS("Functional status"),
     INPUT("Input"),
-    CATALYST("Catalyst Activity"),
     OUTPUT("Output"),
+    CATALYST("Catalyst Activity"),
+    POSITIVELY_REGULATED("Positively regulated by"),
+    NEGATIVELY_REGULATED("Negatively regulated by"),
     PRECEDING_EVENTS("Preceding Event(s)"),
     FOLLOWING_EVENTS("Following Event(s)"),
     MODIFICATION("Post-translational modification"),
@@ -42,8 +43,6 @@ public enum PropertyType {
     REQUIRED_INPUT("Required input components"),
 
     REGULATOR("Has regulators"), //NOTE: REGULATOR and REGULATION are different concepts
-    POSITIVELY_REGULATED("Positively regulated by"),
-    NEGATIVELY_REGULATED("Negatively regulated by"),
 
     MAX_UNITS("Max units count"),
     MIN_UNITS("Min units count"),

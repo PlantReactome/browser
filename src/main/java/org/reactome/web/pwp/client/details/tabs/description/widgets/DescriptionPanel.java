@@ -7,10 +7,10 @@ import org.reactome.web.pwp.client.common.utils.Console;
 import org.reactome.web.pwp.client.details.common.help.HelpPopupImage;
 import org.reactome.web.pwp.client.details.common.help.InstanceTypeExplanation;
 import org.reactome.web.pwp.client.details.tabs.description.widgets.table.factory.OverviewTableFactory;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Event;
-import org.reactome.web.pwp.model.classes.PhysicalEntity;
-import org.reactome.web.pwp.model.classes.Species;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Event;
+import org.reactome.web.pwp.model.client.classes.PhysicalEntity;
+import org.reactome.web.pwp.model.client.classes.Species;
 
 import java.util.List;
 
@@ -25,6 +25,9 @@ public class DescriptionPanel extends DockLayoutPanel {
 
         HorizontalPanel topBar = new HorizontalPanel();
         topBar.add(getTitle(databaseObject));
+        if (databaseObject.getStId()!=null) {
+            topBar.add(getStableId(databaseObject));
+        }
         topBar.add(getSpecies(databaseObject));
         addNorth(topBar, 35);
 
@@ -54,12 +57,12 @@ public class DescriptionPanel extends DockLayoutPanel {
             HTMLPanel helpContent = new HTMLPanel(InstanceTypeExplanation.getExplanation(databaseObject.getSchemaClass()));
             titlePanel.add(new HelpPopupImage(img, helpTitle, helpContent));
         }catch (Exception e){
-            e.printStackTrace();
             Console.error(getClass() + ": " + e.getMessage());
             //ToDo: Look into new Error Handling
         }
         HTMLPanel title = new HTMLPanel(databaseObject.getDisplayName());
         title.getElement().getStyle().setMarginLeft(10, Style.Unit.PX);
+        title.setTitle(databaseObject.getDisplayName());
         titlePanel.add(title);
 
         return titlePanel;
@@ -85,5 +88,18 @@ public class DescriptionPanel extends DockLayoutPanel {
             speciesPanel.add(new HTMLPanel("Species: " + species));
         }
         return speciesPanel;
+    }
+
+    private Widget getStableId(DatabaseObject databaseObject){
+        String stId = databaseObject.getStId();
+        Anchor link = new Anchor(stId, "/cgi-bin/control_panel_st_id?ST_ID=" + stId);
+        link.setTarget("_blank");
+        link.setTitle("Go to REACTOME control panel for " + stId);
+
+        HorizontalPanel stIdPanel = new HorizontalPanel();
+        stIdPanel.setStyleName("elv-Details-StId");
+        stIdPanel.add(new HTMLPanel("Id: "));
+        stIdPanel.add(link);
+        return stIdPanel;
     }
 }

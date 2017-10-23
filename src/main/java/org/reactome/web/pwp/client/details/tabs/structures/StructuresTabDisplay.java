@@ -8,7 +8,7 @@ import org.reactome.web.pwp.client.details.tabs.DetailsTabType;
 import org.reactome.web.pwp.client.details.tabs.structures.events.StructureLoadedEvent;
 import org.reactome.web.pwp.client.details.tabs.structures.handlers.StructureLoadedHandler;
 import org.reactome.web.pwp.client.details.tabs.structures.widgets.*;
-import org.reactome.web.pwp.model.classes.*;
+import org.reactome.web.pwp.model.client.classes.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +89,7 @@ public class StructuresTabDisplay extends ResizeComposite implements StructuresT
     }
 
     @Override
-    public void showReferenceSequences(DatabaseObject databaseObject, List<ReferenceSequence> referenceSequenceList) {
+    public void showReferenceSequences(DatabaseObject databaseObject, List<ReferenceEntity> referenceSequenceList) {
         StructuresPanel panel = this.cache.get(databaseObject);
         if(panel instanceof PdbStructurePanel){
             PdbStructurePanel aux = (PdbStructurePanel) panel;
@@ -143,7 +143,7 @@ public class StructuresTabDisplay extends ResizeComposite implements StructuresT
     @Override
     public void showErrorMessage(String message) {
         HorizontalPanel panel = new HorizontalPanel();
-        Image loader = new Image(CommonImages.INSTANCE.exclamation());
+        Image loader = new Image(CommonImages.INSTANCE.warning());
         panel.add(loader);
 
         Label label = new Label(message);

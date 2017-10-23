@@ -22,13 +22,14 @@ import org.reactome.web.pwp.client.details.tabs.molecules.model.data.PhysicalToR
 import org.reactome.web.pwp.client.details.tabs.molecules.model.data.Result;
 import org.reactome.web.pwp.client.details.tabs.molecules.model.type.PathwayType;
 import org.reactome.web.pwp.client.manager.state.State;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Event;
-import org.reactome.web.pwp.model.classes.Pathway;
-import org.reactome.web.pwp.model.client.RESTFulClient;
-import org.reactome.web.pwp.model.factory.DatabaseObjectFactory;
-import org.reactome.web.pwp.model.factory.SchemaClass;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectCreatedHandler;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Event;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
+import org.reactome.web.pwp.model.client.factory.DatabaseObjectFactory;
+import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
 import java.util.*;
 
@@ -98,8 +99,9 @@ public class MoleculesTabPresenter extends AbstractPresenter implements Molecule
      */
     @Override
     public void getMoleculesData() {
-        String urlPathway  = RESTFulClient.CONTENT_SERVICE_PATH + "getParticipantsToReferenceEntityMaps/" + currentPathway.getDbId();
-        String urlReaction = RESTFulClient.CONTENT_SERVICE_PATH + "referenceEntity/" + currentDatabaseObject.getDbId();
+        //TODO
+        String urlPathway  =  "/ContentService/data/participants/" + currentPathway.getDbId();
+        String urlReaction = "/ContentService/data/participants/" + currentDatabaseObject.getDbId() + "/referenceEntities";
         if(cachePathway.containsKey(currentPathway)){
             Result result = cachePathway.get(currentPathway);
             if(currentPathway.getDbId().equals(currentDatabaseObject.getDbId())){
@@ -127,7 +129,7 @@ public class MoleculesTabPresenter extends AbstractPresenter implements Molecule
      */
     @Override
     public void updateMoleculesData() {
-        String urlReaction = RESTFulClient.CONTENT_SERVICE_PATH + "referenceEntity/" + currentDatabaseObject.getDbId();
+        String urlReaction = "/ContentService/data/participants/" + currentDatabaseObject.getDbId() + "/referenceEntities";
 
         Result result = cachePathway.get(currentPathway);
         result.undoHighlighting();
@@ -141,8 +143,8 @@ public class MoleculesTabPresenter extends AbstractPresenter implements Molecule
 
     /**
      * This method receives molecules data for a pathway and calls the method for reaction if necessary.
-     * @param urlPathway Request-URL for RESTfulService
-     * @param urlReaction Request-URL for RESTfulService
+     * @param urlPathway Request-URL for ContentService
+     * @param urlReaction Request-URL for ContentService
      */
     private void getPathwayParticipants(final String urlPathway, final String urlReaction) {
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, urlPathway);
@@ -238,7 +240,7 @@ public class MoleculesTabPresenter extends AbstractPresenter implements Molecule
     /**
      * This method receives molecules data for a reaction and either sets or updates it in the display.
      * @param result previous result, needed for intersection
-     * @param urlReaction Request-URL for RESTfulService
+     * @param urlReaction Request-URL for ContentService
      * @param update boolean if update necessary
      */
     private void getReactionParticipants(final Result result, String urlReaction, final boolean update, final boolean refreshTitle) {
@@ -383,16 +385,23 @@ public class MoleculesTabPresenter extends AbstractPresenter implements Molecule
         final Long peDbId = toHighlight.get(count).getPeDbId();
         ++count;
 
-        DatabaseObjectFactory.get(peDbId, new DatabaseObjectCreatedHandler() {
+        ContentClient.query(peDbId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
             @Override
-            public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+            public void onObjectLoaded(DatabaseObject databaseObject) {
                 Selection selection = new Selection(databaseObject);
                 eventBus.fireEventFromSource(new DatabaseObjectSelectedEvent(selection), MoleculesTabPresenter.this);
                 display.clearLoadingMsg();
             }
 
             @Override
-            public void onDatabaseObjectError(Throwable exception) {
+            public void onContentClientException(Type type, String message) {
+                String errorMsg = "Error retrieving object for " + peDbId;
+                eventBus.fireEventFromSource(new ErrorMessageEvent(errorMsg), MoleculesTabPresenter.this);
+                display.clearLoadingMsg();
+            }
+
+            @Override
+            public void onContentClientError(ContentClientError error) {
                 String errorMsg = "Error retrieving object for " + peDbId;
                 eventBus.fireEventFromSource(new ErrorMessageEvent(errorMsg), MoleculesTabPresenter.this);
                 display.clearLoadingMsg();
@@ -410,7 +419,7 @@ public class MoleculesTabPresenter extends AbstractPresenter implements Molecule
 
     /**
      * If ReactionParticipants have already been loaded and are still stored in the cach then those should be used
-     * to avoid requesting them again from the RESTful.
+     * to avoid requesting them again from the ContentService.
      * @param result current result
      * @param update decides whether view should be updated (true) or newly set (false)
      */

@@ -8,13 +8,15 @@ import org.reactome.web.pwp.client.common.handlers.SpeciesSelectedHandler;
 import org.reactome.web.pwp.client.common.handlers.StateChangedHandler;
 import org.reactome.web.pwp.client.common.module.BrowserModule;
 import org.reactome.web.pwp.client.manager.state.State;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Event;
-import org.reactome.web.pwp.model.classes.Pathway;
-import org.reactome.web.pwp.model.client.RESTFulClient;
-import org.reactome.web.pwp.model.handlers.MapLoadedHandler;
-import org.reactome.web.pwp.model.util.Path;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Event;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClient;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
+import org.reactome.web.pwp.model.client.util.Path;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,27 +48,33 @@ public class OrthologyManager implements BrowserModule.Manager, StateChangedHand
         this.desiredState.setPath(null);
         this.desiredState.setSpecies(event.getSpecies()); //Keep this after the rest have been set to null;
 
-        List<DatabaseObject> list = new LinkedList<>();
+        List<Long> list = new LinkedList<>();
         if (this.currentState.getPathway() != null) {
-            list.add(this.currentState.getPathway());
+            list.add(this.currentState.getPathway().getDbId());
             if (this.currentState.getSelected() != null) {
-                list.add(this.currentState.getSelected());
+                list.add(this.currentState.getSelected().getDbId());
             }
             if (this.currentState.getPath() != null && !this.currentState.getPath().isEmpty()) {
-                list.addAll(this.currentState.getPath().asList());
+                for (Event e : this.currentState.getPath().asList()) {
+                    list.add(e.getDbId());
+                }
             }
         }
         if (!list.isEmpty()) {
-            RESTFulClient.getOrthologous(list, event.getSpecies(), new MapLoadedHandler<Long, DatabaseObject>() {
+            ContentClient.getOrthologousMap(list, event.getSpecies(), new ContentClientHandler.ObjectMapLoaded() {
                 @Override
-                public void onMapLoaded(Map<Long, DatabaseObject> map) {
+                public void onObjectMapLoaded(Map<String, ? extends DatabaseObject> map) {
                     onOrthologousRetrieved(map);
-
                 }
 
                 @Override
-                public void onMapError(Throwable ex) {
-                    eventBus.fireEventFromSource(new ErrorMessageEvent(ex.getMessage()), this);
+                public void onContentClientException(Type type, String message) {
+                    eventBus.fireEventFromSource(new ErrorMessageEvent(message), this);
+                }
+
+                @Override
+                public void onContentClientError(ContentClientError error) {
+                    onObjectMapLoaded(new HashMap<>());
                 }
             });
         } else {
@@ -79,24 +87,24 @@ public class OrthologyManager implements BrowserModule.Manager, StateChangedHand
         this.currentState = event.getState();
     }
 
-    private void onOrthologousRetrieved(Map<Long, DatabaseObject> map) {
+    private void onOrthologousRetrieved(Map<String, ? extends DatabaseObject> map) {
         Pathway pathway = this.currentState.getPathway();
         if (pathway != null) { //Not really needed because we have check it above
-            if (map.containsKey(pathway.getDbId())) {
-                this.desiredState.setPathway((Pathway) map.get(pathway.getDbId()));
+            if (map.containsKey(pathway.getDbId() + "")) {
+                this.desiredState.setPathway((Pathway) map.get(pathway.getDbId() + ""));
 
                 DatabaseObject selected = this.currentState.getSelected();
                 if (selected != null) {
-                    if (map.containsKey(selected.getDbId())) {
-                        this.desiredState.setSelected(map.get(selected.getDbId()));
+                    if (map.containsKey(selected.getDbId() + "")) {
+                        this.desiredState.setSelected(map.get(selected.getDbId() + ""));
                     }
                 }
 
                 if (currentState.getPath() != null) {
                     Path orthPath = new Path();
                     for (Event event : currentState.getPath()) {
-                        if (map.containsKey(event.getDbId())) {
-                            orthPath.add((Event) map.get(event.getDbId()));
+                        if (map.containsKey(event.getDbId() + "")) {
+                            orthPath.add((Event) map.get(event.getDbId() + ""));
                         } else {
                             break;
                         }

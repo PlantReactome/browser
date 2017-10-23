@@ -11,7 +11,7 @@ import org.reactome.web.pwp.client.details.tabs.DetailsTabTitle;
 import org.reactome.web.pwp.client.details.tabs.DetailsTabType;
 import org.reactome.web.pwp.client.details.tabs.downloads.widgets.DownloadPanel;
 import org.reactome.web.pwp.client.details.tabs.downloads.widgets.DownloadType;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -125,7 +125,6 @@ public class DownloadsTabDisplay extends ResizeComposite implements DownloadsTab
             titlePanel.add(new HelpPopupImage(img, helpTitle, helpContent));
         }catch (Exception e){
             Console.error(e.getMessage());
-            e.printStackTrace();
             //ToDo: Look into new Error Handling
         }
         HTMLPanel title = new HTMLPanel(databaseObject.getDisplayName());
@@ -145,7 +144,7 @@ public class DownloadsTabDisplay extends ResizeComposite implements DownloadsTab
     @Override
     public void showErrorMessage(String message){
         HorizontalPanel panel = new HorizontalPanel();
-        Image loader = new Image(CommonImages.INSTANCE.exclamation());
+        Image loader = new Image(CommonImages.INSTANCE.warning());
         panel.add(loader);
 
         Label label = new Label(message);

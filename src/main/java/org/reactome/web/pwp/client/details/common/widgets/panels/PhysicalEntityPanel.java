@@ -9,9 +9,11 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.*;
 import org.reactome.web.pwp.client.details.common.widgets.disclosure.DisclosurePanelFactory;
 import org.reactome.web.pwp.client.details.delegates.InstanceSelectedDelegate;
-import org.reactome.web.pwp.model.classes.*;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
+import org.reactome.web.pwp.model.client.classes.*;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +22,8 @@ import java.util.Map;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class PhysicalEntityPanel extends DetailsPanel implements OpenHandler<DisclosurePanel>, ClickHandler {
-    private PhysicalEntity physicalEntity;
-    private DisclosurePanel disclosurePanel;
+    PhysicalEntity physicalEntity;
+    DisclosurePanel disclosurePanel;
 
     public PhysicalEntityPanel(PhysicalEntity physicalEntity) {
         this(null, physicalEntity, 1);
@@ -58,14 +60,19 @@ public class PhysicalEntityPanel extends DetailsPanel implements OpenHandler<Dis
     @Override
     public void onOpen(OpenEvent<DisclosurePanel> event) {
         if(!isLoaded())
-            this.physicalEntity.load(new DatabaseObjectLoadedHandler() {
+            this.physicalEntity.load(new ContentClientHandler.ObjectLoaded() {
                 @Override
-                public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+                public void onObjectLoaded(DatabaseObject databaseObject) {
                     setReceivedData(databaseObject);
                 }
 
                 @Override
-                public void onDatabaseObjectError(Throwable trThrowable) {
+                public void onContentClientException(Type type, String message) {
+                    disclosurePanel.setContent(getErrorMessage());
+                }
+
+                @Override
+                public void onContentClientError(ContentClientError error) {
                     disclosurePanel.setContent(getErrorMessage());
                 }
             });
@@ -74,7 +81,6 @@ public class PhysicalEntityPanel extends DetailsPanel implements OpenHandler<Dis
     public void setReceivedData(DatabaseObject data) {
         this.physicalEntity = (PhysicalEntity) data;
         VerticalPanel vp = new VerticalPanel();
-        vp.addStyleName("elv-Details-OverviewDisclosure-content");
         vp.setWidth("98%");
 
         if(!this.physicalEntity.getSpecies().isEmpty()){
@@ -90,7 +96,9 @@ public class PhysicalEntityPanel extends DetailsPanel implements OpenHandler<Dis
 
         if(this.physicalEntity instanceof EntitySet) {
             EntitySet entitySet = (EntitySet) this.physicalEntity;
-            vp.add(getHasComponentsPanel("Has members:", entitySet.getHasMember()));
+            if (!entitySet.getHasMember().isEmpty() ) {
+                vp.add(getHasComponentsPanel("Has members:", entitySet.getHasMember()));
+            }
         }
 
         if(this.physicalEntity instanceof CandidateSet){
@@ -106,7 +114,7 @@ public class PhysicalEntityPanel extends DetailsPanel implements OpenHandler<Dis
         }
 
         if(!this.physicalEntity.getCrossReference().isEmpty()){
-            vp.add(getCrossReferenceTree(this.physicalEntity.getCrossReference()));
+            vp.add(getCrossReferenceTree());
         }
 
         disclosurePanel.setContent(vp);
@@ -119,18 +127,27 @@ public class PhysicalEntityPanel extends DetailsPanel implements OpenHandler<Dis
         InstanceSelectedDelegate.get().instanceSelected(this.physicalEntity);
     }
 
-    private Widget getCrossReferenceTree(List<DatabaseIdentifier> identifiers){
-        Tree referencesTree = new Tree();
+    Widget getCrossReferenceTree(){
         TreeItem references = new TreeItem(SafeHtmlUtils.fromString("External cross-references"));
-        for (DatabaseIdentifier databaseIdentifier : identifiers) {
-            DatabaseIdentifierPanel dbIdPanel = new DatabaseIdentifierPanel(this, databaseIdentifier);
-            TreeItem reference = dbIdPanel.asTreeItem();
-            reference.setState(true, false);
-            references.addItem(reference);
+
+        DatabaseIdentifierPanel dbIdPanel = new DatabaseIdentifierPanel(physicalEntity);
+        TreeItem reference = dbIdPanel.asTreeItem();
+        reference.setState(true, false);
+        references.addItem(reference);
+
+        if(!this.physicalEntity.getCrossReference().isEmpty()){
+            Collections.sort(physicalEntity.getCrossReference());
+            for (DatabaseIdentifier databaseIdentifier : this.physicalEntity.getCrossReference()) {
+                dbIdPanel = new DatabaseIdentifierPanel(databaseIdentifier);
+                reference = dbIdPanel.asTreeItem();
+                reference.setState(true, false);
+                references.addItem(reference);
+            }
         }
+
+        Tree referencesTree = new Tree();
         referencesTree.clear();
         referencesTree.addItem(references);
-
         return referencesTree;
     }
 

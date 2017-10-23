@@ -1,6 +1,7 @@
 package org.reactome.web.pwp.client.details.common.help;
 
-import org.reactome.web.pwp.model.factory.SchemaClass;
+
+import org.reactome.web.pwp.model.client.factory.SchemaClass;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -13,6 +14,9 @@ public abstract class InstanceTypeExplanation {
             case BLACK_BOX_EVENT:
                 explanation = "Shortcut reactions that make the connection between input and output, but don't provide complete mechanistic detail.<p>" +
                         "Used for reactions that do not balance, or complicated processes for which we either don't know all the details, or we choose not to represent every step. (e.g. degradation of a protein)";
+                break;
+            case CHEMICAL_DRUG:
+                explanation = "A therapeutic agent that is a chemically synthesized substance";
                 break;
             //case CONCEPTUAL_EVENT: //DEPRECATED
             case DEPOLYMERISATION:

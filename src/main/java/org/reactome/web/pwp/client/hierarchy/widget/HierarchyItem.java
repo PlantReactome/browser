@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.*;
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.pwp.client.common.CommonImages;
+import org.reactome.web.pwp.client.hierarchy.HierarchyDisplay;
 import org.reactome.web.pwp.client.hierarchy.events.HierarchyItemDoubleClickedEvent;
 import org.reactome.web.pwp.client.hierarchy.events.HierarchyItemMouseOutEvent;
 import org.reactome.web.pwp.client.hierarchy.events.HierarchyItemMouseOverEvent;
@@ -23,11 +24,11 @@ import org.reactome.web.pwp.client.hierarchy.handlers.HierarchyItemDoubleClicked
 import org.reactome.web.pwp.client.hierarchy.handlers.HierarchyItemMouseOutHandler;
 import org.reactome.web.pwp.client.hierarchy.handlers.HierarchyItemMouseOverHandler;
 import org.reactome.web.pwp.client.manager.state.token.Token;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Event;
-import org.reactome.web.pwp.model.classes.Pathway;
-import org.reactome.web.pwp.model.classes.Species;
-import org.reactome.web.pwp.model.util.Path;
+import org.reactome.web.pwp.model.client.classes.DatabaseObject;
+import org.reactome.web.pwp.model.client.classes.Event;
+import org.reactome.web.pwp.model.client.classes.Pathway;
+import org.reactome.web.pwp.model.client.classes.Species;
+import org.reactome.web.pwp.model.client.util.Path;
 
 
 /**
@@ -37,14 +38,15 @@ public class HierarchyItem extends TreeItem implements HasHandlers, MouseOverHan
 
     private HandlerManager handlerManager = new HandlerManager(this);
 
+    private Image icon;
     private boolean childrenLoaded = false;
     private FlowPanel textContainer;
     private InlineLabel analysisData;
 
-    public HierarchyItem(Species species, Event event) {
+    public HierarchyItem(Species species, Event event, boolean ehld) {
         super();
         setUserObject(event);
-        init(species, event);
+        init(species, event, ehld);
         initHandlers();
     }
 
@@ -60,11 +62,19 @@ public class HierarchyItem extends TreeItem implements HasHandlers, MouseOverHan
         return handlerManager.addHandler(HierarchyItemMouseOutEvent.TYPE, handler);
     }
 
-    private void init(Species species, Event event){
+    private void init(Species species, Event event, boolean ehld){
         FlowPanel itemContent = new FlowPanel();
         itemContent.setStyleName(RESOURCES.getCSS().hierarchyItem());
 
-        itemContent.add(new Image(event.getImageResource()));
+        //A regular icon corresponding to the type of event has to be created first
+        this.icon = new Image(event.getImageResource());
+        if (ehld) {
+            setEHLD();
+        } else {
+            this.icon.setTitle(event.getSchemaClass().name);
+        }
+
+        itemContent.add(this.icon);
 
         ImageResource status = event.getStatusIcon();
         if(status!=null){
@@ -85,7 +95,7 @@ public class HierarchyItem extends TreeItem implements HasHandlers, MouseOverHan
         }
 
         ImageResource disease = event.getDiseaseIcon();
-        if(event.isInDisease()){
+        if(event.getInDisease()){
             Image diseaseIcon = new Image(disease);
             diseaseIcon.setTitle("Is a disease");
             itemContent.add(diseaseIcon);
@@ -181,6 +191,11 @@ public class HierarchyItem extends TreeItem implements HasHandlers, MouseOverHan
         if(getParentItem()!=null){
             ((HierarchyItem) getParentItem()).highlightPath();
         }
+    }
+
+    public void setEHLD(){
+        this.icon.setResource(HierarchyDisplay.RESOURCES.ehldPathway());
+        this.icon.setTitle("Pathway with an enhanced diagram");
     }
 
     public void setChildrenLoaded(boolean childrenLoaded) {

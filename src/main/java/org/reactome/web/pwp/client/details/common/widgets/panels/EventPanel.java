@@ -7,14 +7,12 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.reactome.web.pwp.client.details.delegates.InstanceSelectedDelegate;
-import org.reactome.web.pwp.model.classes.DatabaseObject;
-import org.reactome.web.pwp.model.classes.Event;
-import org.reactome.web.pwp.model.classes.Species;
-import org.reactome.web.pwp.model.classes.Summation;
 import org.reactome.web.pwp.client.details.common.widgets.disclosure.DisclosureHeader;
 import org.reactome.web.pwp.client.details.common.widgets.disclosure.DisclosurePanelFactory;
-import org.reactome.web.pwp.model.handlers.DatabaseObjectLoadedHandler;
+import org.reactome.web.pwp.client.details.delegates.InstanceSelectedDelegate;
+import org.reactome.web.pwp.model.client.classes.*;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.content.ContentClientError;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -34,14 +32,19 @@ public class EventPanel extends DetailsPanel implements ClickHandler {
         //Data required of "this.event" will provide the panel with a complete information of the loaded event
         //and that is needed because the species names have to be placed after the name in the "title" of the
         //disclosure panel    "Event displayname [species1, species2, ...]       [X]  [+]"
-        this.event.load(new DatabaseObjectLoadedHandler() {
+        this.event.load(new ContentClientHandler.ObjectLoaded() {
             @Override
-            public void onDatabaseObjectLoaded(DatabaseObject databaseObject) {
+            public void onObjectLoaded(DatabaseObject databaseObject) {
                 setReceivedData(databaseObject);
             }
 
             @Override
-            public void onDatabaseObjectError(Throwable trThrowable) {
+            public void onContentClientException(Type type, String message) {
+                disclosurePanel.setContent(getErrorMessage());
+            }
+
+            @Override
+            public void onContentClientError(ContentClientError error) {
                 disclosurePanel.setContent(getErrorMessage());
             }
         });
@@ -78,7 +81,6 @@ public class EventPanel extends DetailsPanel implements ClickHandler {
     private void setContent(){
         VerticalPanel vp = new VerticalPanel();
         vp.setWidth("99%");
-        vp.addStyleName("elv-Details-OverviewDisclosure-content");
 
         if(!this.event.getSummation().isEmpty()){
             vp.add(new Label("Summation:"));
@@ -88,6 +90,20 @@ public class EventPanel extends DetailsPanel implements ClickHandler {
                 aux.getElement().getStyle().setMarginLeft(15, Style.Unit.PX);
                 vp.add(aux);
             }
+        }
+
+        if(!this.event.getLiteratureReference().isEmpty()){
+            DisclosurePanel literatureReferences = new DisclosurePanel("Published experimental evidence...");
+            literatureReferences.setWidth("100%");
+            VerticalPanel aux = new VerticalPanel();
+            aux.setWidth("100%");
+            for (Publication publication : this.event.getLiteratureReference()) {
+                PublicationPanel pp = new PublicationPanel(this, publication);
+                pp.setWidth("99%");
+                aux.add(pp);
+            }
+            literatureReferences.setContent(aux);
+            vp.add(literatureReferences);
         }
         this.disclosurePanel.setContent(vp);
     }

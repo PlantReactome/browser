@@ -44,6 +44,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <reactome.web.analyitics>2.0.1</reactome.web.analyitics>
+<<<<<<< HEAD
 
         <!--reactome.web.analysis-client>1.3.0</reactome.web.analysis-client>
         <reactome.web.carrousel>1.0.0</reactome.web.carrousel>
@@ -59,6 +60,8 @@
         <reactome.web.quadtree>1.1.0</reactome.web.quadtree>
         <reactome.utils.version>1.0.2</reactome.utils.version-->
 
+=======
+>>>>>>> upstream/master
         <reactome.web.analysis-client>1.4.0</reactome.web.analysis-client>
         <reactome.web.carrousel>1.0.2</reactome.web.carrousel>
         <reactome.web.diagram>3.4.1</reactome.web.diagram>
@@ -148,7 +151,10 @@
         <dependency>
             <groupId>uk.ac.ebi.pwp.widgets</groupId>
             <artifactId>gxa</artifactId>
+<<<<<<< HEAD
             <!--version>3.0.3</version-->
+=======
+>>>>>>> upstream/master
             <version>${reactome.web.gxa}</version>
         </dependency>
 

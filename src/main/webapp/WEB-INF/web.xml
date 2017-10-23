@@ -112,8 +112,6 @@
     <servlet-mapping>
         <servlet-name>DiagramSVGProxy</servlet-name>
         <url-pattern>/download/current/ehld/*</url-pattern>
-        <!--<url-pattern>/download/current/svg/*</url-pattern>-->
-        <!--<url-pattern>/svg/*</url-pattern>-->
     </servlet-mapping>
 
     <!-- Reactome IMAGES (ONLY USED IN DEV MODE) -->
